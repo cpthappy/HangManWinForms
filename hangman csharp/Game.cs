@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Hangman
 {
@@ -16,6 +17,10 @@ namespace Hangman
         /// Total number of wrong guesses
         /// </summary>
         public int NumberOfMisses { get; private set; }
+
+        private readonly Random _Rng;
+
+        public List<string> PossibleWords { get; private set; }
 
         /// <summary>
         /// True, if game is lost, false otherwise
@@ -52,6 +57,8 @@ namespace Hangman
 
         public Game()
         {
+            _Rng = new Random();
+            PossibleWords = new List<string> { "Datenschutz", "Energiekrise", "Daktyloskopie", "Gestaltungstechnik" };
             InitNewGame();
         }
 
@@ -60,8 +67,14 @@ namespace Hangman
         /// </summary>
         public void InitNewGame()
         {
-            SearchWord = new Word("DATENSCHUTZ");
+            SearchWord = new Word(GetRandomWord());
             NumberOfMisses = 0;
+        }
+
+        private string GetRandomWord()
+        {
+            int randomNr = _Rng.Next(PossibleWords.Count);
+            return PossibleWords[randomNr];
         }
 
         public bool GuessLetter(char c)
