@@ -1,25 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hangman
 {
+    /// <summary>
+    /// Class for managing game state
+    /// </summary>
     public class Game
     {
+        /// <summary>
+        /// Current search word
+        /// </summary>
         public Word SearchWord { get; private set; }
 
-        public int Stage { get; private set; }
+        /// <summary>
+        /// Total number of wrong guesses
+        /// </summary>
+        public int NumberOfMisses { get; private set; }
 
+        /// <summary>
+        /// True, if game is lost, false otherwise
+        /// </summary>
         public bool GameLost
         {
             get
             {
-                return Stage == 10;
+                return NumberOfMisses >= 10;
             }
         }
 
+        /// <summary>
+        /// True, if game is won, false otherwise
+        /// </summary>
         public bool GameWon
         {
             get
@@ -28,6 +39,9 @@ namespace Hangman
             }
         }
 
+        /// <summary>
+        /// True if game is finished (i.e. lost or won)
+        /// </summary>
         public bool IsFinished
         {
             get
@@ -41,32 +55,25 @@ namespace Hangman
             InitNewGame();
         }
 
+        /// <summary>
+        /// Start new game
+        /// </summary>
         public void InitNewGame()
         {
-            SearchWord = new Word("FOOBAR");
-            Stage = 0;
-        }
-
-        private void IncreaseStage()
-        {
-            Stage += 1;
-            Stage = Math.Min(Stage, 10);
+            SearchWord = new Word("DATENSCHUTZ");
+            NumberOfMisses = 0;
         }
 
         public bool GuessLetter(char c)
         {
-            var result = this.SearchWord.GuessLetter(c);
+            var result = this.SearchWord.GuessLetter(c) && !GameLost;
 
             if (!result)
             {
-                IncreaseStage();
+                NumberOfMisses += 1;
             }
 
             return result;
         }
-
-
-
-
     }
 }

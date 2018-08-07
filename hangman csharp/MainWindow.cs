@@ -8,10 +8,21 @@ namespace Hangman
 {
     public partial class MainWindow : Form
     {
+        /// <summary>
+        /// Manages game state
+        /// </summary>
         private Game _Game { get; set; }
 
+
+        /// <summary>
+        /// Array with all character buttons
+        /// </summary>
         private Button[] _AlphabetButtons { get; set; }
 
+
+        /// <summary>
+        /// List with all labels for displaying the current word
+        /// </summary>
         private List<Label> _Labels { get; set; }
 
         public MainWindow()
@@ -25,7 +36,11 @@ namespace Hangman
         private void MainWindow_Load(object sender, EventArgs e)
         {
             this.DoubleBuffered = true;
+
+            // Get all buttons except new button:
             _AlphabetButtons = this.Controls.OfType<Button>().Except(new Button[] { btnNew }).ToArray();
+
+            // Register click handler for each character button
             Array.ForEach(_AlphabetButtons, b => b.Click += alphabetButton_Click);
 
             StartNewGame();
@@ -35,19 +50,24 @@ namespace Hangman
         {
             if (_Game.IsFinished)
             {
+                // Ignore input for finished game
                 return;
             }
+
             Button b = (Button)sender;
             b.Enabled = false;
 
+            // Take button text as guessed letter
             if (this._Game.GuessLetter(b.Text[0]))
             {
+                // in case of successfull guess update display
                 for (var i = 0; i < this._Game.SearchWord.DisplayValue.Length; i++)
                 {
                     _Labels[i].Text = this._Game.SearchWord.DisplayValue[i].ToString();
                 }
             }
 
+            // Adjust position and size of labels
             for (int x = 1; x <= _Labels.Count - 1; x++)
             {
                 _Labels[x].Left = _Labels[x - 1].Right;
@@ -63,43 +83,44 @@ namespace Hangman
 
         private void MainWindow_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            if (_Game.Stage >= 1)
+           
+            if (_Game.NumberOfMisses >= 1)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 85, 190, 210, 190);
             }
-            if (_Game.Stage >= 2)
+            if (_Game.NumberOfMisses >= 2)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 148, 190, 148, 50);
             }
-            if (_Game.Stage >= 3)
+            if (_Game.NumberOfMisses >= 3)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 148, 50, 198, 50);
             }
-            if (_Game.Stage >= 4)
+            if (_Game.NumberOfMisses >= 4)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 50, 198, 70);
             }
-            if (_Game.Stage >= 5)
+            if (_Game.NumberOfMisses >= 5)
             {
                 e.Graphics.DrawEllipse(new Pen(Color.Black, 2), new Rectangle(188, 70, 20, 20));
             }
-            if (_Game.Stage >= 6)
+            if (_Game.NumberOfMisses >= 6)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 90, 198, 130);
             }
-            if (_Game.Stage >= 7)
+            if (_Game.NumberOfMisses >= 7)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 95, 183, 115);
             }
-            if (_Game.Stage >= 8)
+            if (_Game.NumberOfMisses >= 8)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 95, 213, 115);
             }
-            if (_Game.Stage >= 9)
+            if (_Game.NumberOfMisses >= 9)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 130, 183, 170);
             }
-            if (_Game.Stage >= 10)
+            if (_Game.NumberOfMisses >= 10)
             {
                 e.Graphics.DrawLine(new Pen(Color.Black, 2), 198, 130, 213, 170);
             }
@@ -114,11 +135,11 @@ namespace Hangman
         {
             ResetUI();
             _Game.InitNewGame();
-            CreateNewLetter_Labels();
+            CreateNewLetterLabels();
             this.Invalidate();
         }
 
-        private void CreateNewLetter_Labels()
+        private void CreateNewLetterLabels()
         {
             int startX = 14;
             foreach (char c in _Game.SearchWord.DisplayValue)
