@@ -28,7 +28,13 @@ namespace Hangman
             }
         }
 
-        public bool IgnoreInput { get; private set; }
+        public bool IsFinished
+        {
+            get
+            {
+                return GameWon || GameLost;
+            }
+        }
 
         public Game()
         {
@@ -37,15 +43,26 @@ namespace Hangman
 
         public void InitNewGame()
         {
-            SearchWord = new Word("Datenschutzgrundverordnung");
+            SearchWord = new Word("FOOBAR");
             Stage = 0;
-            IgnoreInput = false;
         }
 
-        public void IncreaseStage()
+        private void IncreaseStage()
         {
             Stage += 1;
             Stage = Math.Min(Stage, 10);
+        }
+
+        public bool GuessLetter(char c)
+        {
+            var result = this.SearchWord.GuessLetter(c);
+
+            if (!result)
+            {
+                IncreaseStage();
+            }
+
+            return result;
         }
 
 

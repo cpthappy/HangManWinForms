@@ -15,8 +15,7 @@ namespace Hangman
 
                 for (var i = 0; i < SearchWord.Length; i++)
                 {
-                    sb.Append(VisibleLetters[i] ? SearchWord[i] : '_');
-                    sb.Append(" ");
+                    sb.Append(VisibleLetters[i] ? SearchWord[i] : ' ');
                 }
 
                 return sb.ToString();
@@ -35,7 +34,7 @@ namespace Hangman
 
         public Word(string word)
         {
-            SearchWord = word;
+            SearchWord = word.ToUpper() ;
             VisibleLetters = new bool[word.Length];
             for(var i = 0; i < word.Length; ++i)
             {

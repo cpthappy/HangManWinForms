@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Hangman
@@ -15,18 +12,15 @@ namespace Hangman
 
         private Button[] _AlphabetButtons { get; set; }
 
-        private List<Label> _Labels  { get; set; }
+        private List<Label> _Labels { get; set; }
 
-    public MainWindow()
+        public MainWindow()
         {
             _Labels = new List<Label>();
             _Game = new Game();
 
             InitializeComponent();
         }
-
-        
-        bool ignore;
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
@@ -39,12 +33,21 @@ namespace Hangman
 
         private void alphabetButton_Click(object sender, EventArgs e)
         {
-            if (ignore)
+            if (_Game.IsFinished)
+            {
                 return;
+            }
             Button b = (Button)sender;
             b.Enabled = false;
 
-            Array.ForEach(_Labels.ToArray(), lbl => lbl.Text = lbl.Tag.ToString() == b.Text ? b.Text : lbl.Text);
+            if (this._Game.GuessLetter(b.Text[0]))
+            {
+                for (var i = 0; i < this._Game.SearchWord.DisplayValue.Length; i++)
+                {
+                    _Labels[i].Text = this._Game.SearchWord.DisplayValue[i].ToString();
+                }
+            }
+
             for (int x = 1; x <= _Labels.Count - 1; x++)
             {
                 _Labels[x].Left = _Labels[x - 1].Right;
@@ -54,12 +57,6 @@ namespace Hangman
             {
                 this.SetClientSizeCore(_Labels[_Labels.Count - 1].Right + 14, 381);
             }
-
-            if (!_Labels.Any(lbl => lbl.Text == b.Text))
-            {
-                _Game.IncreaseStage();
-            }
-            ignore = _Labels.All(lbl => lbl.Text != " ") || _Game.GameLost;
 
             this.Invalidate();
         }
@@ -117,14 +114,11 @@ namespace Hangman
         {
             ResetUI();
             _Game.InitNewGame();
-            CreateNewLetterLabels();
-
-            ignore = false;
-
+            CreateNewLetter_Labels();
             this.Invalidate();
         }
 
-        private void CreateNewLetterLabels()
+        private void CreateNewLetter_Labels()
         {
             int startX = 14;
             foreach (char c in _Game.SearchWord.DisplayValue)
