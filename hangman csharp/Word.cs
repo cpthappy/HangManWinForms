@@ -25,8 +25,6 @@ namespace Hangman
 
         private bool[] VisibleLetters { get; set; }
 
-        public int NumberOfMisses { get; private set; }
-
         public bool IsComplete
         {
             get
@@ -43,7 +41,6 @@ namespace Hangman
             {
                 VisibleLetters[i] = false;
             }
-            NumberOfMisses = 0;
         }
 
         public bool GuessLetter(char letter)
@@ -57,11 +54,6 @@ namespace Hangman
                     VisibleLetters[i] = true;
                     found = true;
                 }
-            }
-
-            if(!found)
-            {
-                NumberOfMisses++;
             }
 
             return found;

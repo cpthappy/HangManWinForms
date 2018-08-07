@@ -31,12 +31,13 @@ namespace Hangman
         private void MainWindow_Load(object sender, EventArgs e)
         {
             this.DoubleBuffered = true;
-            _AlphabetButtons = this.Controls.OfType<Button>().Except(new Button[] { Button1 }).ToArray();
-            Array.ForEach(_AlphabetButtons, b => b.Click += btn_click);
-            Button1.PerformClick();
+            _AlphabetButtons = this.Controls.OfType<Button>().Except(new Button[] { btnNew }).ToArray();
+            Array.ForEach(_AlphabetButtons, b => b.Click += alphabetButton_Click);
+
+            StartNewGame();
         }
 
-        private void btn_click(object sender, EventArgs e)
+        private void alphabetButton_Click(object sender, EventArgs e)
         {
             if (ignore)
                 return;
@@ -54,8 +55,11 @@ namespace Hangman
                 this.SetClientSizeCore(_Labels[_Labels.Count - 1].Right + 14, 381);
             }
 
-            stage += !_Labels.Any(lbl => lbl.Text == b.Text) ? 1 : 0;
-            ignore = _Labels.All(lbl => lbl.Text != " ") || stage == 10;
+            if (!_Labels.Any(lbl => lbl.Text == b.Text))
+            {
+                _Game.IncreaseStage();
+            }
+            ignore = _Labels.All(lbl => lbl.Text != " ") || _Game.GameLost;
 
             this.Invalidate();
         }
@@ -104,15 +108,26 @@ namespace Hangman
             }
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void btnNew_Click(object sender, EventArgs e)
         {
-            this.SetClientSizeCore(546, 381);
-            string word = words[r.Next(0, words.Length)].ToUpper();
-            Array.ForEach(this.Controls.OfType<Label>().ToArray(), lbl => lbl.Dispose());
-            Array.ForEach(_AlphabetButtons, b => b.Enabled = true);
-            _Labels = new List<Label>();
+            StartNewGame();
+        }
+
+        private void StartNewGame()
+        {
+            ResetUI();
+            _Game.InitNewGame();
+            CreateNewLetterLabels();
+
+            ignore = false;
+
+            this.Invalidate();
+        }
+
+        private void CreateNewLetterLabels()
+        {
             int startX = 14;
-            foreach (char c in word)
+            foreach (char c in _Game.SearchWord.DisplayValue)
             {
                 Label lbl = new Label();
                 lbl.Text = " ";
@@ -124,9 +139,14 @@ namespace Hangman
                 _Labels.Add(lbl);
                 startX = lbl.Right;
             }
-            ignore = false;
-            _Game.InitNewGame();
-            this.Invalidate();
+        }
+
+        private void ResetUI()
+        {
+            this.SetClientSizeCore(546, 381);
+            Array.ForEach(this.Controls.OfType<Label>().ToArray(), lbl => lbl.Dispose());
+            Array.ForEach(_AlphabetButtons, b => b.Enabled = true);
+            _Labels = new List<Label>();
         }
     }
 }

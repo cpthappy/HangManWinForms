@@ -12,6 +12,24 @@ namespace Hangman
 
         public int Stage { get; private set; }
 
+        public bool GameLost
+        {
+            get
+            {
+                return Stage == 10;
+            }
+        }
+
+        public bool GameWon
+        {
+            get
+            {
+                return SearchWord.IsComplete;
+            }
+        }
+
+        public bool IgnoreInput { get; private set; }
+
         public Game()
         {
             InitNewGame();
@@ -21,13 +39,17 @@ namespace Hangman
         {
             SearchWord = new Word("Datenschutzgrundverordnung");
             Stage = 0;
+            IgnoreInput = false;
         }
 
         public void IncreaseStage()
         {
             Stage += 1;
+            Stage = Math.Min(Stage, 10);
         }
 
-       
+
+
+
     }
 }
