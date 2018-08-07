@@ -18,9 +18,15 @@ namespace Hangman
         /// </summary>
         public int NumberOfMisses { get; private set; }
 
-        private readonly Random _Rng;
-
+        /// <summary>
+        /// List with possible guess words
+        /// </summary>
         public List<string> PossibleWords { get; private set; }
+
+        /// <summary>
+        /// Random generator instance
+        /// </summary>
+        private readonly Random _Rng;
 
         /// <summary>
         /// True, if game is lost, false otherwise
